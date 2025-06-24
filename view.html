@@ -83,12 +83,17 @@
 
 
     }
+    .filter{
+        margin-top: 5px;
+    }
   </style>
 </head>
 <body>
   <h1>View Expenses</h1>
   <button type="button" class="add-button" id="add-button">Add New Expense</button>
   <h2 id="total" class="total"></h2>
+
+  
 
   <table>
     <thead>
@@ -105,8 +110,12 @@
 
     </tbody>
   </table>
-  <button id="topFive" class="topFive">View Top 5</button>
-  <button id="viewAll" class="viewAll">View All</button>
+  <button id="viewAll" class="filter">View All</button>
+  <button id="topFive" class="filter">View Top 5</button>
+  <button id="sortDate" class="filter">Sort By Date</button>
+  <button id="sortAmt" class="filter">Sort By Amount(High to Low)</button>
+  <button id="sortAmt2" class="filter">Sort By Amount(Low to High)</button>
+  
   
 
   <script>
@@ -147,7 +156,67 @@
         const row = document.createElement("tr");
 
         total_ += parseFloat(expense_.amount);
-        const originalIndex = expenses.findIndex(e => e.timestamp === expense_.timestamp);
+
+        row.innerHTML = `
+            <td>${index+1}</td>
+            <td>${expense_.amount}</td>
+            <td>${expense_.category}</td>
+            <td>${expense_.description}</td>
+            <td>${expense_.timestamp}</td>
+            <td><button class="delete-btn" onclick="deleteExpense(${expense_.id})">Delete</button></td>
+
+        `;
+
+        expensesTable.appendChild(row);
+    });
+
+    document.getElementById("total").innerText = `Total: Rs ${total_} `;
+    }
+
+    function sortDate() {
+    const expensesTable = document.getElementById("expense-table");
+    const exp = localStorage.getItem("expenses");
+    const expenseList = JSON.parse(exp) || [];
+    let total_ = 0;
+    expensesTable.innerHTML = "";
+
+    expenseList.reverse();
+
+    expenseList.forEach((expense_, index) => {
+        const row = document.createElement("tr");
+
+        total_ += parseFloat(expense_.amount);
+
+        row.innerHTML = `
+            <td>${index+1}</td>
+            <td>${expense_.amount}</td>
+            <td>${expense_.category}</td>
+            <td>${expense_.description}</td>
+            <td>${expense_.timestamp}</td>
+            <td><button class="delete-btn" onclick="deleteExpense(${expense_.id})">Delete</button></td>
+
+        `;
+
+        expensesTable.appendChild(row);
+    });
+
+    document.getElementById("total").innerText = `Total: Rs ${total_} `;
+    }
+
+    function sortAmt() {
+    const expensesTable = document.getElementById("expense-table");
+    const exp = localStorage.getItem("expenses");
+    const expenseList = JSON.parse(exp) || [];
+    let total_ = 0;
+    expensesTable.innerHTML = "";
+
+    expenseList.sort((a, b) => b.amount - a.amount);
+
+
+    expenseList.forEach((expense_, index) => {
+        const row = document.createElement("tr");
+
+        total_ += parseFloat(expense_.amount);
 
         row.innerHTML = `
             <td>${index+1}</td>
@@ -166,15 +235,39 @@
     }
 
 
-    /*function deleteExpense(index) {
-      const confirmDelete = confirm("Are you sure you want to delete this expense?");
-      if (!confirmDelete) return;
+    function sortAmt2() {
+    const expensesTable = document.getElementById("expense-table");
+    const exp = localStorage.getItem("expenses");
+    const expenseList = JSON.parse(exp) || [];
+    let total_ = 0;
+    expensesTable.innerHTML = "";
 
-      const updatedExpenses = [...expenses];
-      updatedExpenses.splice(index, 1);
-      localStorage.setItem("expenses", JSON.stringify(updatedExpenses));
-      window.location.reload();
-    }*/
+    expenseList.sort((a, b) => a.amount - b.amount);
+
+
+    expenseList.forEach((expense_, index) => {
+        const row = document.createElement("tr");
+
+        total_ += parseFloat(expense_.amount);
+
+        row.innerHTML = `
+            <td>${index+1}</td>
+            <td>${expense_.amount}</td>
+            <td>${expense_.category}</td>
+            <td>${expense_.description}</td>
+            <td>${expense_.timestamp}</td>
+            <td><button class="delete-btn" onclick="deleteExpense(${expense_.id})">Delete</button></td>
+
+        `;
+
+        expensesTable.appendChild(row);
+    });
+
+    document.getElementById("total").innerText = `Total: Rs ${total_} `;
+    }
+
+    
+
 
     function deleteExpense(id) {
     const confirmDelete = confirm("Are you sure you want to delete this expense?");
@@ -195,6 +288,9 @@
 
 
   document.getElementById("topFive").addEventListener("click",topFive);
+  document.getElementById("sortDate").addEventListener("click",sortDate);
+  document.getElementById("sortAmt").addEventListener("click",sortAmt);
+  document.getElementById("sortAmt2").addEventListener("click",sortAmt2);
 
   document.getElementById("viewAll").addEventListener("click",function(){
     window.location.href="view.html";
